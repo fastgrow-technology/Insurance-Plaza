@@ -35,7 +35,7 @@ const adminNavLinks = [
     icon: Database,
     subLinks: [
       { href: '/admin/submissions/contacts', label: 'Contacts', icon: Mail },
-      { href: '/admin/submissions/quotes', label: 'Quote Submissions', icon: FilePlus },
+      { href: '/admin/submissions/quotes', label: 'Quote Requests', icon: FilePlus },
       { href: '/admin/submissions/newsletter', label: 'Newsletter', icon: Send },
     ]
   },

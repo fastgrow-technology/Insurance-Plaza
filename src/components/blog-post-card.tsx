@@ -4,8 +4,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import type { BlogPost } from '@/lib/types';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, Calendar, User } from 'lucide-react';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowRight, Calendar } from 'lucide-react';
 
 interface BlogPostCardProps {
   post: BlogPost;
@@ -13,10 +13,10 @@ interface BlogPostCardProps {
 
 export const BlogPostCard = ({ post }: BlogPostCardProps) => {
   return (
-    <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group bg-white border border-gray-200/80 shadow-sm rounded-lg">
+    <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group bg-white rounded-lg">
       <Link href={`/blog/${post.slug}`} className="block overflow-hidden rounded-t-lg">
         <Image
-          src={post.image}
+          src={post.image || "https://placehold.co/600x400.png"}
           alt={post.title}
           width={600}
           height={400}

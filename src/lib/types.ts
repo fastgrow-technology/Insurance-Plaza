@@ -20,13 +20,21 @@ export interface ServiceFAQ {
   answer: string;
 }
 
+export interface ContentSection {
+  type: 'text-image' | 'image-text' | 'text-only';
+  title: string;
+  text: string;
+  image?: string;
+}
+
 export interface Service {
   id: number;
   slug: string;
   title: string;
   image: string;
   short_description: string;
-  long_description: string | null;
+  long_description: string | null; // Kept for potential fallback, but new content goes in sections
+  content_sections: ContentSection[] | null;
   icon_svg: string | null;
   show_benefits: boolean;
   benefits: ServiceBenefit[] | null;
@@ -65,6 +73,7 @@ export interface Testimonial {
   id: number;
   name: string;
   role: string;
+  text?: string;
   quote: string;
   image: string;
 }

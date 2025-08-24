@@ -1,6 +1,6 @@
 
 import Link from 'next/link';
-import { getPages } from '@/lib/data';
+import { getPages } from '@/lib/data/server';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -66,4 +66,5 @@ export default async function PagesAdminPage() {
     </div>
   );
 }
+
 

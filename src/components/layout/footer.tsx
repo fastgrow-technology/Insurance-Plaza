@@ -1,18 +1,18 @@
 
 'use client';
+
 import Link from 'next/link';
 import { Facebook, Twitter, Linkedin, Mail, Phone, MapPin, Instagram } from 'lucide-react';
-import Image from 'next/image';
 
 import { Logo } from '@/components/icons/logo';
-import type { SiteSettings, Service } from '@/lib/types';
+import type { Service, SiteSettings } from '@/lib/types';
 
 interface FooterProps {
-    settings: SiteSettings;
     services: Pick<Service, 'slug' | 'title' | 'image' | 'short_description'>[];
+    settings: SiteSettings;
 }
 
-export function Footer({ settings, services }: FooterProps) {
+export function Footer({ services, settings }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   const quickLinks = [
@@ -34,11 +34,9 @@ export function Footer({ settings, services }: FooterProps) {
     <footer className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div>
-            <Link href="/" className="mb-6 inline-block">
-              <Logo className="text-white" forFooter={true}/>
-            </Link>
-            <p className="text-gray-400 mb-6">
+          <div className="space-y-6">
+            <Logo settings={settings} className="text-white" forFooter={true}/>
+            <p className="text-gray-400">
               Your trusted partner for comprehensive insurance and financial solutions since 2010.
             </p>
             <div className="flex space-x-4">
@@ -108,7 +106,17 @@ export function Footer({ settings, services }: FooterProps) {
       <div className="border-t border-gray-800">
         <div className="container mx-auto px-4 py-8 flex flex-col justify-center items-center gap-2 text-center text-sm text-gray-400">
           <p>&copy; {currentYear} {settings['site_name'] || 'Insurance Plaza'}. All Rights Reserved.</p>
-          <p>Designed with <span className="text-primary">&#9829;</span> by Your Partner</p>
+          <p>
+            Developed by{' '}
+            <a
+                href="https://digitechspark.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#91E125] hover:underline"
+            >
+                Digitech Spark
+            </a>
+          </p>
         </div>
       </div>
     </footer>

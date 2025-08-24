@@ -1,6 +1,12 @@
 
-import { createSupabaseServerClient } from '@/lib/supabase/server';
-import type { Service, Testimonial, RelatedService, SiteSettings, Media } from '../types';
+'use server';
+
+import type { CookieOptions } from '@supabase/ssr';
+import { createServerClient } from '@supabase/ssr';
+import type { Service, Testimonial, RelatedService, SiteSettings, Media, Page } from '../types';
+import { createSupabaseServerClient } from '@/lib/supabase/server-actions';
+import { cookies } from 'next/headers';
+
 
 export async function getServiceBySlug(slug: string): Promise<{ service: Service | null, relatedServices: RelatedService[] }> {
     const supabase = createSupabaseServerClient();
@@ -64,7 +70,7 @@ export async function getMediaFiles(): Promise<Media[]> {
         return [];
     }
     
-    const filesWithUrls = data.map((file) => {
+     const filesWithUrls = data.map((file) => {
         const { data: { publicUrl } } = supabase.storage.from('media').getPublicUrl(file.name);
         return {
             ...file,
@@ -74,3 +80,31 @@ export async function getMediaFiles(): Promise<Media[]> {
 
     return filesWithUrls;
 }
+
+export async function getPages(): Promise<Page[]> {
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase.from('pages').select('*');
+  if (error) {
+    console.error('Error fetching pages:', error);
+    return [];
+  }
+  return data;
+}
+
+export async function getPageBySlug(slug: string): Promise<Page | null> {
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase.from('pages').select('*').eq('slug', slug).single();
+  if (error) {
+    // Gracefully handle not found error for slugs that don't exist
+    if (error.code === 'PGRST116') {
+      return null;
+    }
+    console.error(`Error fetching page with slug ${slug}:`, error);
+    return null;
+  }
+  return data;
+}
+
+    
+
+    

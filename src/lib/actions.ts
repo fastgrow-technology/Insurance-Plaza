@@ -2,7 +2,6 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createSupabaseServerClient } from './supabase/server';
 import {
   contactFormSchema,
   type ContactFormState,
@@ -19,7 +18,8 @@ import { routeUserQuery } from '@/ai/flows/route-user-query';
 import { redirect } from 'next/navigation';
 import type { Service } from './types';
 import { z } from 'zod';
-import { uploadMediaFile, deleteMediaFile as deleteMediaFileAction } from './actions/media';
+import { createSupabaseServerClient } from '@/lib/supabase/server-actions';
+import { getSiteSettings } from './data/server';
 
 export async function submitContactForm(
   prevState: ContactFormState,
@@ -388,15 +388,27 @@ export async function updatePageContent(formData: FormData) {
   const slug = formData.get('slug') as string;
   const title = formData.get('title') as string;
   const description = formData.get('description') as string;
-  const content = JSON.parse(formData.get('content') as string);
   
+  const contentObject = JSON.parse(formData.get('content') as string);
+  
+  // Handle the 'enabled' fields for sections, which come from switches
+  // and might not be booleans yet
+  if (contentObject) {
+      for (const sectionKey in contentObject) {
+          if (Object.prototype.hasOwnProperty.call(contentObject[sectionKey], 'enabled')) {
+              // The form sends 'on'/'off' or true/false, so we need to normalize to boolean
+              contentObject[sectionKey].enabled = contentObject[sectionKey].enabled === 'on' || contentObject[sectionKey].enabled === true;
+          }
+      }
+  }
+
   if (!slug) {
     return { message: 'Slug is missing.' };
   }
   
   const { error } = await supabase
       .from('pages')
-      .update({ title, description, content })
+      .update({ title, description, content: contentObject })
       .eq('slug', slug);
 
   if (error) {
@@ -409,9 +421,6 @@ export async function updatePageContent(formData: FormData) {
   revalidatePath(`/admin/pages/edit/${slug}`);
   redirect('/admin/pages');
 }
-
-export { uploadMediaFile };
-export { deleteMediaFileAction as deleteMediaFile };
 
 
 export async function submitQuote(

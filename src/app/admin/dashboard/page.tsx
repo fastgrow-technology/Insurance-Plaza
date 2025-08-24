@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server-actions';
 import { Cog, Newspaper, MessageSquareQuote, Tv, FileText, Mail, Bell, Library, Users, Activity, FilePlus, Send, Database } from 'lucide-react';
 import Link from 'next/link';
 
@@ -56,3 +56,7 @@ export default async function AdminDashboard() {
     </div>
   );
 }
+
+    
+
+    

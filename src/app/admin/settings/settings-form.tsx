@@ -9,7 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { MediaPicker } from '../media/media-picker';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { generateSitemapAction } from '@/lib/actions/sitemap';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
@@ -21,11 +21,19 @@ interface SettingsFormProps {
 export function SettingsForm({ initialSettings }: SettingsFormProps) {
   const socialPlatforms = ['facebook', 'twitter', 'linkedin', 'instagram'];
   const homepageSections = ['services', 'about', 'testimonials', 'stats', 'blog', 'newsletter', 'contact'];
-  const [logoUrl, setLogoUrl] = useState(initialSettings['site_logo_url'] || '');
-  const [footerLogoUrl, setFooterLogoUrl] = useState(initialSettings['site_footer_logo_url'] || '');
-  const [faviconUrl, setFaviconUrl] = useState(initialSettings['site_favicon_url'] || '');
+  const [logoUrl, setLogoUrl] = useState('');
+  const [footerLogoUrl, setFooterLogoUrl] = useState('');
+  const [faviconUrl, setFaviconUrl] = useState('');
+  const [preloaderLogoUrl, setPreloaderLogoUrl] = useState('');
   const [isGeneratingSitemap, setIsGeneratingSitemap] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setLogoUrl(initialSettings['site_logo_url'] || '');
+    setFooterLogoUrl(initialSettings['site_footer_logo_url'] || '');
+    setFaviconUrl(initialSettings['site_favicon_url'] || '');
+    setPreloaderLogoUrl(initialSettings['site_preloader_logo_url'] || '');
+  }, [initialSettings]);
 
   const handleSitemapGeneration = async () => {
     setIsGeneratingSitemap(true);
@@ -61,6 +69,12 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                   <Label htmlFor="site_logo_url">Header Logo URL</Label>
                   <Input id="site_logo_url" name="site_logo_url" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
                   <MediaPicker onImageSelect={setLogoUrl} />
+                </div>
+                 <div className="space-y-2">
+                  <Label htmlFor="site_preloader_logo_url">Preloader Logo URL</Label>
+                  <Input id="site_preloader_logo_url" name="site_preloader_logo_url" value={preloaderLogoUrl} onChange={(e) => setPreloaderLogoUrl(e.target.value)} />
+                  <MediaPicker onImageSelect={setPreloaderLogoUrl} />
+                   <p className="text-sm text-muted-foreground">Optional. If not set, the Header Logo will be used.</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="site_footer_logo_url">Footer Logo URL</Label>

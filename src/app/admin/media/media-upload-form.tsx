@@ -2,10 +2,9 @@
 'use client';
 
 import { useFormStatus } from 'react-dom';
-import { useEffect, useRef } from 'react';
-import { useFormState } from 'react-dom';
+import { useEffect, useRef, useActionState } from 'react';
 
-import { uploadMediaFile } from '@/lib/actions';
+import { uploadMediaFile } from '@/lib/actions/media';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -35,7 +34,7 @@ interface MediaUploadFormProps {
 }
 
 export function MediaUploadForm({ onUploadSuccess }: MediaUploadFormProps) {
-  const [state, formAction] = useFormState(uploadMediaFile, { success: false, message: '' });
+  const [state, formAction] = useActionState(uploadMediaFile, { success: false, message: '' });
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
 

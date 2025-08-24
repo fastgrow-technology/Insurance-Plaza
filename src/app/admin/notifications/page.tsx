@@ -1,4 +1,5 @@
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+
+import { createSupabaseServerClient } from '@/lib/supabase/server-actions';
 import { NotificationSettingsForm } from './notification-settings-form';
 
 export default async function NotificationsPage() {
@@ -12,3 +13,7 @@ export default async function NotificationsPage() {
 
     return <NotificationSettingsForm initialSettings={settings} />;
 }
+
+    
+
+    

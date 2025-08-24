@@ -23,10 +23,12 @@ import { AdminNav } from '@/components/admin-nav';
 import { Logo } from '@/components/icons/logo';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { useSiteSettings } from '@/hooks/use-site-settings';
 
-export default function AdminLayout({ children }: PropsWithChildren) {
+export default function AdminDashboardLayout({ children }: PropsWithChildren) {
   const router = useRouter();
-
+  const settings = useSiteSettings();
+  
   const handleSignOut = async () => {
     const supabase = createSupabaseBrowserClient();
     await supabase.auth.signOut();
@@ -39,9 +41,7 @@ export default function AdminLayout({ children }: PropsWithChildren) {
       <div className="hidden border-r bg-muted/40 md:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-            <Link href="/" className="flex items-center gap-2 font-semibold">
-              <Logo />
-            </Link>
+            <Logo settings={settings} />
           </div>
           <div className="flex-1">
             <AdminNav />
@@ -62,6 +62,9 @@ export default function AdminLayout({ children }: PropsWithChildren) {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="flex flex-col">
+               <div className="p-4">
+                <Logo settings={settings} />
+              </div>
               <AdminNav />
             </SheetContent>
           </Sheet>

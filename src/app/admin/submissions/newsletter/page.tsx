@@ -1,5 +1,5 @@
 
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server-actions';
 import { format } from 'date-fns';
 
 import {
@@ -62,3 +62,7 @@ export default async function NewsletterSubscribersPage() {
     </div>
   );
 }
+
+    
+
+    

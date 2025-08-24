@@ -1,5 +1,5 @@
 
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server-actions';
 import { MoreHorizontal } from 'lucide-react';
 import {
   Card,
@@ -112,3 +112,7 @@ export default async function UsersPage() {
     </div>
   );
 }
+
+    
+
+    

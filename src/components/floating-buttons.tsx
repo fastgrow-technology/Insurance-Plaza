@@ -20,12 +20,12 @@ const FloatingButtons = ({ settings }: FloatingButtonsProps) => {
     setIsMounted(true);
   }, []);
 
+  const { whatsapp_enabled, whatsapp_recipient_number } = settings;
+  const showQuoteButton = pathname !== '/get-a-quote';
+
   if (!isMounted) {
     return null;
   }
-
-  const { whatsapp_enabled, whatsapp_recipient_number } = settings;
-  const showQuoteButton = pathname !== '/get-a-quote';
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">

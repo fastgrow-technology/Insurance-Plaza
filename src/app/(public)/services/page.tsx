@@ -1,8 +1,8 @@
+
 import type { Metadata } from 'next';
-import { getServices } from '@/lib/data/static';
+import { getServices, getPageBySlug } from '@/lib/data/static';
 import { ServiceCard } from '@/components/service-card';
 import Image from 'next/image';
-import { getPageBySlug } from '@/lib/data';
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPageBySlug('services');
@@ -29,13 +29,13 @@ export default async function ServicesPage() {
             className="z-0"
             data-ai-hint="financial planning meeting"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/40 to-primary/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-[#77A835]/50" />
         </div>
         <div className="relative min-h-[400px] flex items-center justify-center">
             <div className="container mx-auto px-4 py-16 text-center">
                 <div className="max-w-3xl mx-auto">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">{content.hero?.title || "Our Insurance Services"}</h1>
-                    <p className="text-xl text-white/90">{content.hero?.subtitle || "We offer a comprehensive suite of insurance products designed to provide you with security and peace of mind. Browse our offerings to find the coverage that's right for you."}</p>
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-relaxed mb-6 [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]">{content.hero?.title || "Our Insurance Services"}</h1>
+                    <p className="text-xl text-white/90 leading-relaxed [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]">{content.hero?.subtitle || "We offer a comprehensive suite of insurance products designed to provide you with security and peace of mind. Browse our offerings to find the coverage that's right for you."}</p>
                 </div>
             </div>
         </div>
@@ -53,3 +53,5 @@ export default async function ServicesPage() {
     </div>
   );
 }
+
+    

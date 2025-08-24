@@ -1,5 +1,6 @@
+
 import { updateTeamMember } from '@/lib/actions';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server-actions';
 import { notFound } from 'next/navigation';
 import { TeamForm } from '../../team-form';
 
@@ -22,3 +23,7 @@ export default async function EditTeamMemberPage({ params }: { params: { id: str
     />
   );
 }
+
+    
+
+    

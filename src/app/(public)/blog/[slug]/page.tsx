@@ -49,12 +49,12 @@ export default async function BlogPostPage({ params }: Props) {
             objectFit="cover"
             className="z-0"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/60 to-primary/40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-[#77A835]/50" />
         </div>
         <div className="relative min-h-[400px] flex items-center justify-center">
             <div className="container mx-auto px-4 py-16 text-center">
                 <div className="max-w-4xl mx-auto">
-                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4">{post.title}</h1>
+                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-relaxed mb-4 [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]">{post.title}</h1>
                     <div className="mt-4 flex items-center justify-center gap-4 text-white/90">
                       <div className="flex items-center gap-2">
                         <Avatar className="size-8">
@@ -102,3 +102,5 @@ export default async function BlogPostPage({ params }: Props) {
     </div>
   );
 }
+
+    

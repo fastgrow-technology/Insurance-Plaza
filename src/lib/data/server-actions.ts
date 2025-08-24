@@ -1,8 +1,10 @@
 
 'use server';
 
-import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { Page, Media } from '../types';
+import { cookies } from 'next/headers';
+import { createSupabaseServerClient } from '../supabase/server-actions';
+
 
 export async function getPagesSA(): Promise<Page[]> {
   const supabase = createSupabaseServerClient();
@@ -43,3 +45,7 @@ export async function getMediaFiles(): Promise<Media[]> {
 
     return filesWithUrls;
 }
+
+    
+
+    

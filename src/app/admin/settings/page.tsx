@@ -1,5 +1,5 @@
 
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server-actions';
 import { SettingsForm } from './settings-form';
 
 export default async function SettingsPage() {
@@ -13,3 +13,7 @@ export default async function SettingsPage() {
 
   return <SettingsForm initialSettings={settings} />;
 }
+
+    
+
+    

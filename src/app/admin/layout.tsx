@@ -1,9 +1,9 @@
 
 
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server-actions';
 import { redirect } from 'next/navigation';
 import type { PropsWithChildren } from 'react';
-import AdminLayout from '@/app/(admin)/layout';
+import AdminDashboardLayout from '@/app/(admin)/layout';
 
 export default async function AdminAreaLayout({ children }: PropsWithChildren) {
   const supabase = createSupabaseServerClient();
@@ -16,8 +16,8 @@ export default async function AdminAreaLayout({ children }: PropsWithChildren) {
   }
 
   return (
-    <AdminLayout>
+    <AdminDashboardLayout>
         {children}
-    </AdminLayout>
+    </AdminDashboardLayout>
   );
 }

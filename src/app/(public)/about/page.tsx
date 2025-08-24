@@ -2,8 +2,8 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { Award, Handshake, Target } from 'lucide-react';
-import { getPageBySlug } from '@/lib/data';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { getPageBySlug } from '@/lib/data/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server-actions';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -20,12 +20,14 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AboutPage() {
   const page = await getPageBySlug('about');
   const content = page?.content || {};
+  const showSection = (section: string) => content?.[section]?.enabled !== false;
 
   const supabase = createSupabaseServerClient();
   const { data: teamMembers } = await supabase.from('team_members').select('*');
 
   return (
     <div className="bg-background">
+      {showSection('hero') && content.hero && (
       <section className="relative">
         <div className="absolute inset-0">
           <Image
@@ -36,18 +38,20 @@ export default async function AboutPage() {
             className="z-0"
             data-ai-hint="company team meeting"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/40 to-primary/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-[#77A835]/50" />
         </div>
         <div className="relative min-h-[400px] flex items-center justify-center">
             <div className="container mx-auto px-4 py-16 text-center">
                 <div className="max-w-3xl mx-auto">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">{content.hero?.title || "About Insurance Plaza"}</h1>
-                    <p className="text-xl text-white/90">{content.hero?.subtitle || "Your dedicated partner in navigating the world of insurance with confidence and ease."}</p>
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-relaxed mb-6 [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]">{content.hero?.title || "About Insurance Plaza"}</h1>
+                    <p className="text-xl text-white/90 leading-relaxed [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]">{content.hero?.subtitle || "Your dedicated partner in navigating the world of insurance with confidence and ease."}</p>
                 </div>
             </div>
         </div>
       </section>
+      )}
 
+      {showSection('story') && content.story && (
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -73,7 +77,9 @@ export default async function AboutPage() {
           </div>
         </div>
       </section>
-
+      )}
+      
+      {showSection('mission_vision') && content.mission_vision && (
       <section className="bg-muted py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -125,8 +131,9 @@ export default async function AboutPage() {
           </div>
         </div>
       </section>
+      )}
       
-      {content.founder && (
+      {showSection('founder') && content.founder && (
         <section className="py-16 md:py-24">
             <div className="container mx-auto px-4">
                 <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -151,6 +158,7 @@ export default async function AboutPage() {
         </section>
       )}
 
+      {showSection('team') && (
       <section className="bg-muted py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -173,6 +181,7 @@ export default async function AboutPage() {
           </div>
         </div>
       </section>
+      )}
     </div>
   );
 }

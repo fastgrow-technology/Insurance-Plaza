@@ -1,8 +1,9 @@
 
 'use server';
 
-import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
+import { createSupabaseServerClient } from '../supabase/server-actions';
 
 export async function uploadMediaFile(prevState: any, formData: FormData) {
   const supabase = createSupabaseServerClient();
@@ -86,3 +87,6 @@ export async function deleteMediaFile(fileName: string) {
   return { success: true, message: 'File deleted successfully.' };
 }
 
+    
+
+    

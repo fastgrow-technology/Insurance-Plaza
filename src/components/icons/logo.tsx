@@ -1,41 +1,50 @@
 
 'use client';
 
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
-import type { SiteSettings } from '@/lib/types';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import type { SiteSettings } from '@/lib/types';
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
-export const Logo = ({ className, forFooter = false }: { className?: string, forFooter?: boolean }) => {
-  const [settings, setSettings] = useState<SiteSettings>({});
+interface LogoProps {
+    settings?: SiteSettings | null;
+    className?: string;
+    forFooter?: boolean;
+    preloader?: boolean;
+}
 
-  useEffect(() => {
-    const fetchSettings = async () => {
-      const supabase = createSupabaseBrowserClient();
-      const { data, error } = await supabase.from('site_settings').select('key, value');
-      if (error) {
-        console.error('Error fetching settings for logo:', error);
-        return;
-      }
-      const settingsObj = data.reduce((acc, setting) => {
-        acc[setting.key] = setting.value;
-        return acc;
-      }, {} as SiteSettings);
-      setSettings(settingsObj);
-    };
-    fetchSettings();
-  }, []);
+export const Logo = ({ settings, className, forFooter = false, preloader = false }: LogoProps) => {
+  const siteName = settings?.site_name || 'Insurance Plaza';
   
-  const logoUrl = forFooter ? settings.site_footer_logo_url : settings.site_logo_url;
-  const siteName = settings.site_name || 'Insurance Plaza';
+  let logoUrl;
+
+  if (preloader) {
+    logoUrl = settings?.site_preloader_logo_url || settings?.site_logo_url;
+  } else if (forFooter) {
+    logoUrl = settings?.site_footer_logo_url || settings?.site_logo_url;
+  } else {
+    logoUrl = settings?.site_logo_url;
+  }
   
+  // Ensure logoUrl is not an empty string which can cause an error
   if (logoUrl) {
-    return <Image src={logoUrl} alt={siteName} width={150} height={40} className="w-auto h-auto" priority />;
+    return (
+      <Link href="/" className={cn('relative inline-block h-16 w-56', className)}>
+        <Image
+          src={logoUrl}
+          alt={siteName}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-contain"
+          priority
+        />
+      </Link>
+    );
   }
 
   return (
-    <div className={`font-['Pacifico'] text-3xl text-primary ${className}`}>
+    <Link href="/" className={cn("font-['Pacifico'] text-3xl text-primary", className)}>
       {siteName}
-    </div>
+    </Link>
   );
 };

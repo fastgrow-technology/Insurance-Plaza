@@ -9,16 +9,23 @@ import { Preloader } from '@/components/preloader';
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
+  const siteName = settings?.site_name || 'Insurance Plaza';
+  const siteDescription = settings?.site_description || 'Your trusted partner for comprehensive insurance solutions.';
+  const faviconUrl = settings?.site_favicon_url || '/favicon.ico';
+
   return {
-    title: settings.site_name || 'Insurance Plaza',
-    description: settings.site_description || 'Your trusted partner for comprehensive insurance solutions.',
+    title: {
+      template: `%s | ${siteName}`,
+      default: siteName,
+    },
+    description: siteDescription,
     icons: {
-      icon: settings.site_favicon_url || '/favicon.ico',
+      icon: faviconUrl,
     }
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -42,7 +49,6 @@ export default function RootLayout({
         />
       </head>
       <body className={cn('min-h-screen bg-background font-body antialiased')}>
-        <Preloader />
         {children}
         <Toaster />
         <Analytics />

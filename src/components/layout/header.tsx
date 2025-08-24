@@ -1,14 +1,14 @@
 
 'use client';
 import { HeaderClient } from './header-client';
-import type { SiteSettings, Service } from '@/lib/types';
+import type { Service, SiteSettings } from '@/lib/types';
 
 interface HeaderProps {
-    settings: SiteSettings;
     services: Pick<Service, 'slug' | 'title' | 'image' | 'short_description'>[];
+    settings: SiteSettings;
 }
 
-export function Header({ settings, services }: HeaderProps) {
+export function Header({ services, settings }: HeaderProps) {
   
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -23,6 +23,6 @@ export function Header({ settings, services }: HeaderProps) {
   ];
 
   return (
-    <HeaderClient navLinks={navLinks} />
+    <HeaderClient navLinks={navLinks} settings={settings} />
   );
 };

@@ -1,5 +1,6 @@
+
 import { updateBlogPost } from '@/lib/actions';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server-actions';
 import { notFound } from 'next/navigation';
 import { BlogPostForm } from '../../blog-post-form';
 
@@ -22,3 +23,7 @@ export default async function EditBlogPostPage({ params }: { params: { id: strin
     />
   );
 }
+
+    
+
+    

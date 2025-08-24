@@ -1,5 +1,6 @@
+
 import { updateTestimonial } from '@/lib/actions';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server-actions';
 import { notFound } from 'next/navigation';
 import { TestimonialForm } from '../../testimonial-form';
 
@@ -22,3 +23,7 @@ export default async function EditTestimonialPage({ params }: { params: { id: st
     />
   );
 }
+
+    
+
+    

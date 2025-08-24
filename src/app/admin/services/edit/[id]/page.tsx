@@ -1,6 +1,6 @@
 
 import { updateService } from '@/lib/actions';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server-actions';
 import { notFound } from 'next/navigation';
 import { ServiceForm } from '../../service-form';
 
@@ -23,3 +23,7 @@ export default async function EditServicePage({ params }: { params: { id: string
     />
   );
 }
+
+    
+
+    

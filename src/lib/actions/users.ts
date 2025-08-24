@@ -1,9 +1,11 @@
 
 'use server';
 
-import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { cookies } from 'next/headers';
+import { createSupabaseServerClient } from '../supabase/server-actions';
+
 
 const inviteSchema = z.object({
   email: z.string().email(),
@@ -27,7 +29,7 @@ export async function inviteUser(prevState: any, formData: FormData) {
   const { data, error } = await supabase.auth.admin.inviteUserByEmail(email, {
     data: { role },
   });
-
+  
   if (error) {
     console.error('Error inviting user:', error);
     return { message: `Error: ${error.message}` };
@@ -87,3 +89,7 @@ export async function resendInvite(email: string) {
 
     return { success: true, message: `Invite resent to ${email}` };
 }
+
+    
+
+    

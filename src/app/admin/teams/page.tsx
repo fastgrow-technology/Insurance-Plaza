@@ -1,6 +1,7 @@
+
 import Link from 'next/link';
 import { PlusCircle, MoreHorizontal } from 'lucide-react';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server-actions';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -113,3 +114,7 @@ export default async function TeamAdminPage() {
     </div>
   );
 }
+
+    
+
+    

@@ -15,9 +15,17 @@ import { MediaPicker } from '@/app/admin/media/media-picker';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Trash } from 'lucide-react';
 import { useFieldArray, useForm, Controller } from 'react-hook-form';
+import { Switch } from '@/components/ui/switch';
 
 // Define the desired order of sections for the homepage
 const homePageSectionOrder = ['hero', 'services', 'about', 'testimonials', 'stats', 'blog', 'newsletter', 'contact'];
+const aboutPageSectionOrder = ['hero', 'story', 'mission_vision', 'founder', 'team'];
+
+const pageSectionOrders: Record<string, string[]> = {
+  home: homePageSectionOrder,
+  about: aboutPageSectionOrder,
+  // Add other pages here if they have a specific section order
+};
 
 export default function EditPageContentPage() {
   const params = useParams();
@@ -25,7 +33,7 @@ export default function EditPageContentPage() {
   const [page, setPage] = useState<Page | null>(null);
   const [orderedContent, setOrderedContent] = useState<Record<string, any>>({});
 
-  const { register, control, handleSubmit, reset, setValue } = useForm<Page>();
+  const { register, control, handleSubmit, reset, setValue, watch } = useForm<Page>();
 
   const { fields: statFields, append: appendStat, remove: removeStat } = useFieldArray({ control, name: "content.stats.items" });
   const { fields: featureFields, append: appendFeature, remove: removeFeature } = useFieldArray({ control, name: "content.about.features" });
@@ -36,24 +44,33 @@ export default function EditPageContentPage() {
       const pageData = await getPageBySlugSA(slug);
       if (pageData) {
         setPage(pageData);
-        reset(pageData); // Use react-hook-form's reset to populate the form
+        
+        // Initialize enabled: true for any section that doesn't have it
+        const contentWithDefaults = pageData.content || {};
+        Object.keys(contentWithDefaults).forEach(sectionKey => {
+          if (typeof contentWithDefaults[sectionKey] === 'object' && contentWithDefaults[sectionKey] !== null && !('enabled' in contentWithDefaults[sectionKey])) {
+             contentWithDefaults[sectionKey].enabled = true;
+          }
+        });
+        
+        const updatedPageData = {...pageData, content: contentWithDefaults };
+        reset(updatedPageData);
 
-        if (slug === 'home' && pageData.content) {
+        const sectionOrder = pageSectionOrders[slug] || Object.keys(updatedPageData.content || {});
+
+        if (updatedPageData.content) {
             const sortedContent: Record<string, any> = {};
-            homePageSectionOrder.forEach(key => {
-                if (pageData.content[key]) {
-                    sortedContent[key] = pageData.content[key];
+            sectionOrder.forEach(key => {
+                if (updatedPageData.content[key]) {
+                    sortedContent[key] = updatedPageData.content[key];
                 }
             });
-            // Add any other sections that might not be in the ordered list
-            Object.keys(pageData.content).forEach(key => {
+            Object.keys(updatedPageData.content).forEach(key => {
                 if (!sortedContent[key]) {
-                    sortedContent[key] = pageData.content[key];
+                    sortedContent[key] = updatedPageData.content[key];
                 }
             });
             setOrderedContent(sortedContent);
-        } else if (pageData.content) {
-             setOrderedContent(pageData.content);
         }
       }
     }
@@ -61,12 +78,10 @@ export default function EditPageContentPage() {
   }, [slug, reset]);
 
   const onSubmit = (data: Page) => {
-    // We need to re-structure the data before sending it to the server action.
     const formData = new FormData();
     formData.append('title', data.title);
     formData.append('description', data.description);
     formData.append('slug', slug);
-    // Serialize the entire content object as a single JSON string
     formData.append('content', JSON.stringify(data.content));
     updatePageContent(formData);
   };
@@ -78,6 +93,9 @@ export default function EditPageContentPage() {
   const renderField = (key: string, value: any, prefix: string) => {
     const fullKey = `${prefix}.${key}` as const;
     const displayName = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+    // Skip rendering the 'enabled' field as it will have a dedicated switch
+    if (key === 'enabled') return null;
 
     if (key === 'items' && prefix.endsWith('stats')) {
         return (
@@ -159,10 +177,34 @@ export default function EditPageContentPage() {
  const renderContentFields = (content: any, prefix = 'content') => {
     return Object.entries(content).map(([key, value]) => {
       if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+        const sectionName = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        const switchFieldName = `${prefix}.${key}.enabled` as any;
         return (
           <div key={key} className="space-y-4 rounded-md border p-4">
-            <h4 className="font-semibold capitalize">{key.replace(/_/g, ' ')} Section</h4>
-            {renderContentFields(value, `${prefix}.${key}`)}
+            <div className="flex justify-between items-center pb-4 border-b">
+                <h4 className="font-semibold capitalize text-lg">{sectionName} Section</h4>
+                <div className="flex items-center gap-2">
+                    <Label htmlFor={switchFieldName} className="text-sm">
+                        {watch(switchFieldName) ? 'Enabled' : 'Disabled'}
+                    </Label>
+                    <Controller
+                        name={switchFieldName}
+                        control={control}
+                        render={({ field }) => (
+                            <Switch
+                                id={switchFieldName}
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                            />
+                        )}
+                    />
+                </div>
+            </div>
+            {watch(switchFieldName) && (
+              <div className="pt-4 space-y-4">
+                  {renderContentFields(value, `${prefix}.${key}`)}
+              </div>
+            )}
           </div>
         );
       }
@@ -191,7 +233,7 @@ export default function EditPageContentPage() {
       <Card>
         <CardHeader>
           <CardTitle>Edit Page: {page.title}</CardTitle>
-          <CardDescription>Modify the content for this page.</CardDescription>
+          <CardDescription>Modify the content for this page. Use the toggles to enable or disable entire sections.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4 rounded-md border p-4">

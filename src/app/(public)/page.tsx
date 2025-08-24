@@ -1,4 +1,5 @@
 
+'use client';
 import { Star } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -7,32 +8,49 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { BlogPostCard } from '@/components/blog-post-card';
 import { ServiceCard } from '@/components/service-card';
-import { getPageBySlug } from '@/lib/data';
-import { getServices } from '@/lib/data/static';
-import { getBlogPosts } from '@/lib/data/static';
-import { getTestimonials, getSiteSettings } from '@/lib/data/server';
-import type { Metadata } from 'next';
+import { getTestimonials, getSiteSettings, getPageBySlug } from '@/lib/data/server';
+import { getServices, getBlogPosts } from '@/lib/data/static';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ContactForm } from '@/components/contact-form';
 import { Check, Quote } from 'lucide-react';
 import { NewsletterForm } from '@/components/newsletter-form';
+import { cn } from '@/lib/utils';
+import { useEffect, useState } from 'react';
+import type { Page, Testimonial, Service, SiteSettings, BlogPost as BlogPostType } from '@/lib/types';
+import Autoplay from "embla-carousel-autoplay"
 
-export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPageBySlug('home');
-  return {
-    title: page?.title || 'Insurance Plaza | Your Trusted Insurance Partner',
-    description: page?.description || 'Welcome to Insurance Plaza. We offer a wide range of insurance products with the best coverage to protect you and your family. Get a free quote today!',
-  };
-}
 
-export default async function Home() {
-  const services = await getServices();
-  const blogPosts = await getBlogPosts(3);
-  const testimonials = await getTestimonials();
-  const page = await getPageBySlug('home');
+export default function Home() {
+  const [services, setServices] = useState<Service[]>([]);
+  const [blogPosts, setBlogPosts] = useState<BlogPostType[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [page, setPage] = useState<Page | null>(null);
+  const [settings, setSettings] = useState<SiteSettings | null>(null);
+  
+  useEffect(() => {
+    async function fetchData() {
+        const [servicesData, blogPostsData, testimonialsData, pageData, settingsData] = await Promise.all([
+            getServices(),
+            getBlogPosts(3),
+            getTestimonials(),
+            getPageBySlug('home'),
+            getSiteSettings()
+        ]);
+        setServices(servicesData as any[]);
+        setBlogPosts(blogPostsData);
+        setTestimonials(testimonialsData);
+        setPage(pageData);
+        setSettings(settingsData);
+    }
+    fetchData();
+  }, []);
+  
+  if (!page || !settings) {
+    return null; // Or some loading state
+  }
+
   const content = page?.content || {};
-  const settings = await getSiteSettings();
   
   const stats = content.stats?.items || [
     { value: '15+', label: 'Years of Experience' },
@@ -48,42 +66,45 @@ export default async function Home() {
     { text: 'Easy Claims' },
   ];
 
-  const showSection = (section: string) => settings[`homepage_section_${section}_enabled`] !== 'false';
+  const showSection = (section: string) => content?.[section]?.enabled !== false;
 
   return (
     <div className="flex flex-col">
-      <section id="home" className="relative">
-        <div className="absolute inset-0">
-          <Image
-            src={content.hero?.image || "https://placehold.co/1920x700.png"}
-            alt="Happy family"
-            layout="fill"
-            objectFit="cover"
-            className="z-0"
-            data-ai-hint="happy family outdoors"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/40 to-primary/20" />
-        </div>
-        <div className="relative min-h-[600px] lg:min-h-[700px] flex items-center">
-            <div className="container mx-auto px-4 py-16">
-                <div className="max-w-2xl">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">{content.hero?.title || "Protecting What Matters Most to You"}</h1>
-                    <p className="text-xl text-white/90 mb-8">{content.hero?.subtitle || "Comprehensive insurance solutions tailored to your unique needs. Get peace of mind knowing you're covered for life's unexpected moments."}</p>
-                    <div className="flex flex-wrap gap-4">
-                        <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-100">
-                           <Link href="/get-a-quote">Get a Free Quote</Link>
-                        </Button>
-                         <Button asChild size="lg" variant="default" className="bg-primary border-primary text-primary-foreground hover:bg-transparent hover:text-white hover:border-white border">
-                           <Link href="#services">Explore Services</Link>
-                        </Button>
-                    </div>
-                </div>
-            </div>
-        </div>
-      </section>
+      {showSection('hero') && content.hero && (
+        <section id="home" className="relative">
+          <div className="absolute inset-0">
+            <Image
+              src={content.hero?.image || "https://placehold.co/1920x700.png"}
+              alt="Happy family"
+              layout="fill"
+              objectFit="cover"
+              className="z-0"
+              data-ai-hint="happy family outdoors"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-[#77A835]/50" />
+          </div>
+          <div className="relative min-h-[600px] lg:min-h-[700px] flex items-center">
+              <div className="container mx-auto px-4 py-16">
+                  <div className="max-w-2xl">
+                      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-snug md:leading-snug lg:leading-[1.2] [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]">{content.hero?.title || "Protecting What Matters Most to You"}</h1>
+                      <p className="text-xl text-white/90 mb-8 leading-relaxed [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]">{content.hero?.subtitle || "Comprehensive insurance solutions tailored to your unique needs. Get peace of mind knowing you're covered for life's unexpected moments."}</p>
+                      <div className="flex flex-wrap gap-4">
+                          <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-100">
+                            <Link href="/get-a-quote">Get a Free Quote</Link>
+                          </Button>
+                          <Button asChild size="lg" variant="default" className="bg-primary border-primary text-primary-foreground hover:bg-transparent hover:text-white hover:border-white border">
+                            <Link href="#services">Explore Services</Link>
+                          </Button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+        </section>
+      )}
 
-      {showSection('services') && (
-        <section id="services" className="py-20 bg-white">
+      {showSection('services') && content.services && (
+        <section id="services" className="py-20 bg-white relative overflow-hidden">
+           <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(119,168,53,0.15),rgba(255,255,255,0))]"></div>
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{content.services?.title || "Our Insurance Services"}</h2>
@@ -94,22 +115,22 @@ export default async function Home() {
               className="w-full"
             >
               <CarouselContent>
-                {services.map((service, index) => (
-                  <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/4">
+                {services.map((service) => (
+                  <CarouselItem key={service.slug} className="md:basis-1/2 lg:basis-1/3">
                      <div className="p-1 h-full">
                        <ServiceCard service={service} />
                      </div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="absolute -left-4 md:-left-8 top-1/2 -translate-y-1/2" />
-              <CarouselNext className="absolute -right-4 md:-right-8 top-1/2 -translate-y-1/2" />
+              <CarouselPrevious className="absolute -left-4 md:-left-8 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground hover:bg-primary/90" />
+              <CarouselNext className="absolute -right-4 md:-right-8 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground hover:bg-primary/90" />
             </Carousel>
           </div>
         </section>
       )}
 
-      {showSection('about') && (
+      {showSection('about') && content.about && (
         <section id="about" className="py-20 bg-gray-50">
           <div className="container mx-auto px-4">
               <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
@@ -138,7 +159,7 @@ export default async function Home() {
         </section>
       )}
 
-      {showSection('testimonials') && (
+      {showSection('testimonials') && content.testimonials && (
         <section id="testimonials" className="py-20 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
@@ -147,11 +168,17 @@ export default async function Home() {
             </div>
             <Carousel
               opts={{ align: 'start', loop: true }}
+              plugins={[
+                Autoplay({
+                  delay: 4000,
+                  stopOnInteraction: false,
+                }),
+              ]}
               className="w-full"
             >
               <CarouselContent>
-                {testimonials.map((testimonial, index) => (
-                  <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                {testimonials.map((testimonial) => (
+                  <CarouselItem key={testimonial.id} className="md:basis-1/2 lg:basis-1/3">
                     <div className="p-4 h-full">
                       <Card className="p-8 h-full flex flex-col justify-between shadow-lg bg-gray-50 rounded-xl">
                         <div className="flex-grow">
@@ -183,7 +210,7 @@ export default async function Home() {
         </section>
       )}
 
-      {showSection('stats') && (
+      {showSection('stats') && content.stats && (
         <section className="py-20 relative bg-fixed bg-cover bg-center" style={{backgroundImage: `url('${content.stats?.background_image || "https://placehold.co/1920x400.png"}')`}} data-ai-hint="business people handshake">
            <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-secondary/90"></div>
           <div className="container mx-auto px-4 relative">
@@ -199,7 +226,7 @@ export default async function Home() {
         </section>
       )}
       
-      {showSection('blog') && content.blog?.title && (
+      {showSection('blog') && content.blog && (
         <section id="blog" className="py-20 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
@@ -212,7 +239,7 @@ export default async function Home() {
                 ))}
              </div>
             <div className="mt-12 text-center">
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
                 <Link href="/blog">View All Articles</Link>
               </Button>
             </div>
@@ -220,7 +247,7 @@ export default async function Home() {
         </section>
       )}
 
-      {showSection('newsletter') && content.newsletter?.title && (
+      {showSection('newsletter') && content.newsletter && (
         <section id="newsletter" className="py-20 bg-gray-50">
           <div className="container mx-auto px-4">
               <div className="text-center max-w-2xl mx-auto">
@@ -232,7 +259,7 @@ export default async function Home() {
         </section>
       )}
       
-      {showSection('contact') && content.contact?.title && (
+      {showSection('contact') && content.contact && (
         <section id="contact" className="py-20 bg-white">
            <div className="container mx-auto px-4">
               <div className="text-center mb-12">

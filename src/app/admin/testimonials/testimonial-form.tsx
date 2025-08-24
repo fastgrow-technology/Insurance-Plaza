@@ -26,7 +26,7 @@ export function TestimonialForm({ formAction, initialData, title, buttonText }: 
     resolver: zodResolver(testimonialFormSchema),
     defaultValues: initialData ? {
         ...initialData,
-        quote: initialData.text || initialData.quote,
+        quote: initialData.quote || '',
     } : {
       name: '',
       role: '',

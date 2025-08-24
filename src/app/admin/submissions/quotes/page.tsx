@@ -1,5 +1,5 @@
 
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server-actions';
 import { format } from 'date-fns';
 
 import {
@@ -24,7 +24,7 @@ import { Eye } from 'lucide-react';
 
 export default async function QuoteSubmissionsPage() {
   const supabase = createSupabaseServerClient();
-  const { data: submissions, error } = await supabase.from('quote_submissions').select('*').order('created_at', { ascending: false });
+  const { data: submissions, error } = await supabase.from('quote_submissions').select('id, created_at, service, full_name, email, phone').order('created_at', { ascending: false });
 
   if (error) {
     console.error('Error fetching quote submissions:', error);
@@ -62,7 +62,7 @@ export default async function QuoteSubmissionsPage() {
                   <TableRow key={submission.id}>
                     <TableCell>{format(new Date(submission.created_at), 'PPP p')}</TableCell>
                     <TableCell>{submission.service || 'N/A'}</TableCell>
-                    <TableCell className="font-medium">{submission.firstName} {submission.lastName}</TableCell>
+                    <TableCell className="font-medium">{submission.full_name}</TableCell>
                     <TableCell>{submission.email}</TableCell>
                     <TableCell>{submission.phone || 'N/A'}</TableCell>
                     <TableCell className="flex items-center gap-2">
